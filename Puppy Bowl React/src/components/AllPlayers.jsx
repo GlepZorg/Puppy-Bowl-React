@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import '../../src/App.css'; 
 
 function AllPlayers() {
@@ -47,6 +48,7 @@ function AllPlayers() {
           <div className="player-info">
             <h2>{player.name}</h2>
             <p>Breed: {player.breed}</p>
+            <Link to={`/players/${player.id}`} className="details-button">Details</Link>
             <button onClick={() => handleDelete(player.id)}>Delete</button>
           </div>
         </div>

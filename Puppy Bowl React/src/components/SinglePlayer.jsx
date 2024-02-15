@@ -1,53 +1,38 @@
-import React, { useState } from 'react';
-import '../../src/App.css';
+import React, { useState, useEffect } from 'react';
+import { useParams } from 'react-router-dom';
 
 function SinglePlayer() {
-  const [searchId, setSearchId] = useState('');
   const [player, setPlayer] = useState(null);
-  const [error, setError] = useState('');
+  const { id } = useParams(); 
 
-  const handleSearch = async () => {
-    setError(''); 
-    if (!searchId) {
-      setError('Please enter a valid ID.');
-      return;
-    }
-
-    try {
-      const response = await fetch(`https://fsa-puppy-bowl.herokuapp.com/api/2310-FSA-ET-WEB-PT-SF/players/${searchId}`);
-      if (!response.ok) throw new Error('Player not found.');
-
-      const data = await response.json();
-      if (data && data.data) {
-        setPlayer(data.data);
-      } else {
-        throw new Error('Player not found.');
+  useEffect(() => {
+    const fetchPlayer = async () => {
+      try {
+        const response = await fetch(`https://fsa-puppy-bowl.herokuapp.com/api/2310-FSA-ET-WEB-PT-SF/players/${id}`);
+        const data = await response.json();
+        if (data.success) {
+          setPlayer(data.data.player);
+        } else {
+          throw new Error(data.error.message);
+        }
+      } catch (error) {
+        console.error("Error fetching player details:", error);
       }
-    } catch (err) {
-      setError(err.message);
-      setPlayer(null);
-    }
-  };
+    };
+
+    fetchPlayer();
+  }, [id]); 
+
+  if (!player) {
+    return <div>Loading...</div>;
+  }
 
   return (
-    <div className="single-player-container">
-      <input
-        type="text"
-        placeholder="Enter player ID"
-        value={searchId}
-        onChange={(e) => setSearchId(e.target.value)}
-      />
-      <button onClick={handleSearch}>Search</button>
-
-      {error && <p>{error}</p>}
-
-      {player && (
-        <div>
-          <img src={player.imageUrl} alt={player.name} style={{ width: "100px", height: "100px" }} />
-          <h2>{player.name}</h2>
-          <p>Breed: {player.breed}</p>
-        </div>
-      )}
+    <div className='single-player-container'>
+      <h1>{player.name}</h1>
+      <p>Breed: {player.breed}</p>
+      <p>Team: {player.teamId}</p> 
+      <p>Status: {player.status}</p>
     </div>
   );
 }

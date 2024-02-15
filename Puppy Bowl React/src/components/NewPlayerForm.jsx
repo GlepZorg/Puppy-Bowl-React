@@ -1,94 +1,66 @@
 import React, { useState } from 'react';
-import '../../src/App.css';
 
-function NewPlayerForm() {
-  const [name, setName] = useState('');
-  const [breed, setBreed] = useState('');
-  const [status, setStatus] = useState('field'); 
-  const [imageUrl, setImageUrl] = useState('');
-  const [teamId, setTeamId] = useState(''); 
+function NewPlayerForm({ addNewPlayer }) {
+  const [playerName, setPlayerName] = useState('');
+  const [playerBreed, setPlayerBreed] = useState('');
+  const [playerStatus, setPlayerStatus] = useState('bench');
+  const [playerImage, setPlayerImage] = useState('');
 
-  const handleSubmit = async (event) => {
+  const handleSubmit = (event) => {
     event.preventDefault();
-
-    try {
-      const playerData = {
-        name,
-        breed,
-        status,
-        imageUrl,
-        teamId, 
-      };
-
-      const response = await fetch('https://fsa-puppy-bowl.herokuapp.com/api/2310-FSA-ET-WEB-PT-SF/players', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(playerData),
-      });
-
-      const result = await response.json();
-      if (result.success) {
-        
-        console.log('Player created:', result.data.newPlayer);
-      } else {
-        
-        throw new Error(result.error.message);
-      }
-    } catch (error) {
-      console.error('Failed to create a new player:', error);
-    }
+    const newPlayer = {
+      name: playerName,
+      breed: playerBreed,
+      status: playerStatus,
+      imageUrl: playerImage,
+    };
+    addNewPlayer(newPlayer);
+    setPlayerName('');
+    setPlayerBreed('');
+    setPlayerStatus('bench');
+    setPlayerImage('');
   };
 
   return (
-    <div className='new-player-form-container'>
-      <form onSubmit={handleSubmit}>
-      <div>
+    <div className="new-player-form-container">
+      <form onSubmit={handleSubmit} className="new-player-form">
         <label htmlFor="name">Name:</label>
         <input
+          type="text"
           id="name"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          required
+          value={playerName}
+          onChange={(e) => setPlayerName(e.target.value)}
         />
-      </div>
-      <div>
+        
         <label htmlFor="breed">Breed:</label>
         <input
+          type="text"
           id="breed"
-          value={breed}
-          onChange={(e) => setBreed(e.target.value)}
-          required
+          value={playerBreed}
+          onChange={(e) => setPlayerBreed(e.target.value)}
         />
-      </div>
-      <div>
-        <label>Status:</label>
-        <select value={status} onChange={(e) => setStatus(e.target.value)}>
+        
+        <label htmlFor="status">Status:</label>
+        <select
+          id="status"
+          value={playerStatus}
+          onChange={(e) => setPlayerStatus(e.target.value)}
+        >
           <option value="field">Field</option>
           <option value="bench">Bench</option>
         </select>
-      </div>
-      <div>
-        <label htmlFor="imageUrl">Image URL:</label>
+        
+        <label htmlFor="image">Image URL:</label>
         <input
-          id="imageUrl"
-          value={imageUrl}
-          onChange={(e) => setImageUrl(e.target.value)}
+          type="text"
+          id="image"
+          value={playerImage}
+          onChange={(e) => setPlayerImage(e.target.value)}
         />
-      </div>
-      <div>
-        <label htmlFor="teamId">Team ID (optional):</label>
-        <input
-          id="teamId"
-          value={teamId}
-          onChange={(e) => setTeamId(e.target.value)}
-        />
-      </div>
-      <button type="submit">Add Player</button>
-    </form>
+        
+        <button type="submit">Add Player</button>
+      </form>
     </div>
-    
   );
 }
 
